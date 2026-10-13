@@ -1,0 +1,23 @@
+{
+  "produtos": [
+    {
+      "id": "1",
+      "nome": "Notebook PRÓ",
+      "preco": 3500,
+      "estoque": 10
+    },
+    {
+      "id": "4",
+      "nome": "Filtro de Linha Tensionado",
+      "preco": 150,
+      "estoque": 4
+    },
+    {
+      "id": "pn4Zdl_33TA",
+      "nome": "Head-Phones BT Preto",
+      "preco": 350,
+      "estoque": 2
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
