@@ -4,24 +4,30 @@ import { Link, useNavigate } from "react-router";
 import { FaRegEdit as Editar} from "react-icons/fa";
 import { RiDeleteBinLine as Excluir} from "react-icons/ri";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function Produtos() {
 
     //Recipiente onde irei guardar a lista de produtos
-    const[produtos,setProduto] = useState<TipoProduto[]>([]);
+    const[produtos,setProdutos] = useState<TipoProduto[]>([]);
 
     useEffect( ()=>{
  
         const carregarProdutos = async ()=>{
             try {
-                const resposta = await fetch("http://localhost:3001/produtos");
+                const resposta = await fetch(API_URL);
 
                 if(!resposta.ok){
                     throw new Error(`Erro no fetch da resposta dos produtos: ${resposta.status} - ${resposta.statusText}`);
                 }
 
-                const data:TipoProduto[] = await resposta.json();
-                console.log(data);
-                setProduto(data);
+                const { data,status } = await resposta.json();
+
+                if(status === "error"){
+                    throw new Error("A resposta da API não contém a propriedade 'produtos'");
+                }
+                
+                setProdutos(data);
 
             } catch (error) {
                 console.error(error);
@@ -32,8 +38,6 @@ export default function Produtos() {
         carregarProdutos();
 
     },[]);
-
-    const navigate = useNavigate();
 
     const modalInfo = useRef<HTMLDialogElement>(null);
 
@@ -47,17 +51,30 @@ export default function Produtos() {
     const handleDelete = async()=>{
         try {
             
-            const response = await fetch(`http://localhost:3001/produtos/${idExclusao}`,
-                {method:"DELETE"});
+            const response = await fetch(API_URL,
+                {   method:"POST",
+                    headers: {
+                        "Content-Type": "text/plain;charset=UTF-8",
+                    },
+                    body: JSON.stringify({action:"DELETE", id:idExclusao})
+                });
 
                 //ERRO
                 if(!response.ok){
                     throw new Error(`Ocorreu um erro na exclusão do produto: ${response.status} - ${response.statusText}`);
                 }
 
+                const { status } = await response.json();
+
+                if(status === "error"){
+                    throw new Error("A resposta da API não contém a propriedade 'status'");
+                }
+
                 //SUCESSO
+                modalInfo.current?.close();
                 alert("Produto excluído com sucesso!");
-                navigate("/");
+                //Atualiza a lista de produtos removendo o produto excluído e atualizando o estado do componente filtrando o array de produtos para remover o produto com o idExclusao.
+                setProdutos( produtos.filter( (p)=> p.id !== idExclusao ) );
 
         } catch (error) {
             console.error(error)
@@ -85,6 +102,7 @@ export default function Produtos() {
                         <th>NOME</th>
                         <th>PREÇO</th>
                         <th>ESTOQUE</th>
+                        <th>AVATAR</th>
                         <th>AÇÕES</th>
                     </tr>
                 </thead>
@@ -97,6 +115,9 @@ export default function Produtos() {
                                 <td>{p.preco}</td>
                                 <td>{p.estoque}</td>
                                 <td>
+                                    <img src={p.avatar} alt={p.nome} width="50" />
+                                </td>
+                                <td>
                                     <Link to={`/editar-produtos/${p.id}`}> <Editar/> </Link>  | 
                                     <Link to="#" onClick={()=> abrirModal(p.id)}> <Excluir/> </Link>
                                 </td>
@@ -105,7 +126,7 @@ export default function Produtos() {
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colSpan={5}>Quantidade de Produtos: {produtos.length}</td>
+                        <td colSpan={6}>Quantidade de Produtos: {produtos.length}</td>
                     </tr>
                 </tfoot>
             </table>
