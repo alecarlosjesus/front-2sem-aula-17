@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import type { TipoProduto } from "../../types/types";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function EditarProdutos() {
 
   const navigate = useNavigate();
@@ -17,14 +19,18 @@ export default function EditarProdutos() {
 
     const carregarProduto = async () => {
       try {
-        const resposta = await fetch(`http://localhost:3001/produtos/${id}`);
+          const resposta = await fetch(`${API_URL}?id=${id}`);
 
         if (!resposta.ok) {
           throw new Error(`Erro no fetch da resposta dos produto: ${resposta.status} - ${resposta.statusText}`);
         }
 
-        const data: TipoProduto = await resposta.json();
-        console.log(data);
+        const {data, status } = await resposta.json();
+
+        if (status === "error") {
+          throw new Error("A resposta da API não contém a propriedade 'data'");
+        }
+        
         setProduto(data);
 
       } catch (error) {
@@ -40,16 +46,22 @@ export default function EditarProdutos() {
   const handleUpdate = async () => {
     try {
 
-      const response = await fetch(`http://localhost:3001/produtos/${produto.id}`, {
-        method: "PUT",
+      const response = await fetch(API_URL, {
+        method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "text/plain;charset=UTF-8",
         },
-        body: JSON.stringify(produto)
+        body: JSON.stringify({action: "PUT", ...produto})
       });
 
       if (!response.ok) {
         throw new Error(`Ocorreu um erro na atualização do produto: ${response.status} - ${response.statusText}`)
+      }
+
+      const { status } = await response.json();
+
+      if (status === "error") {
+        throw new Error("Ocorreu um erro na atualização do produto: A resposta da API não contém a propriedade 'status'");
       }
 
       //SUCESSO
@@ -81,6 +93,13 @@ export default function EditarProdutos() {
             <div>
               <label htmlFor="estoque">Estoque do Produto </label>
               <input type="number" step={1} name="estqoue" id="estoque" value={produto.estoque} onChange={(e) => setProduto({ ...produto, estoque: parseInt(e.target.value) })} />
+            </div>
+            <div>
+              <label htmlFor="avatar">Avatar do Produto </label>
+              <input type="url" name="avatar" id="avatar" value={produto.avatar} onChange={(e) => setProduto({ ...produto, avatar: e.target.value })} />
+              <div>
+                <img src={produto.avatar} alt={produto.nome} width="100" />
+              </div>
             </div>
             <div>
               <button type="button" onClick={handleUpdate}>ATUALIZAR</button>
