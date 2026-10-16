@@ -64,6 +64,10 @@ export default function CadProduto() {
               <input type="number" step={1} name="estqoue" id="estoque" value={produto.estoque} onChange={(e) => setProduto({ ...produto, estoque: parseInt(e.target.value) })} />
             </div>
             <div>
+              <label htmlFor="avatar">Avatar do Produto </label>
+              <input type="url" name="avatar" id="avatar" value={produto.avatar} onChange={(e) => setProduto({ ...produto, avatar: e.target.value })} />
+            </div>
+            <div>
               <button type="button" onClick={handleSubmit}>CADASTRAR</button>
             </div>
           </fieldset>
