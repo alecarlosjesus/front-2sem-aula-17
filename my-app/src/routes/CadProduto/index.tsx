@@ -8,7 +8,7 @@ export default function CadProduto() {
   const navigate = useNavigate();
 
   //Recipiente onde irei guardar a lista de produtos
-  const [produto, setProduto] = useState<TipoProduto>({ id: "", nome: "", preco: 0, estoque: 0 });
+  const [produto, setProduto] = useState<TipoProduto>({ id: "", nome: "", preco: 0, estoque: 0 ,avatar:""});
 
 
   const handleSubmit = async () => {

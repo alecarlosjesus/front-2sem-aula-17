@@ -11,7 +11,7 @@ export default function EditarProdutos() {
   const { id } = useParams<{ id: string }>();
 
   //Recipiente onde irei guardar a lista de produtos
-  const [produto, setProduto] = useState<TipoProduto>({ id: "", nome: "", preco: 0, estoque: 0 });
+  const [produto, setProduto] = useState<TipoProduto>({ id: "", nome: "", preco: 0, estoque: 0, avatar: "" });
 
   useEffect(() => {
 

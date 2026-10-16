@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { TipoProduto } from "../../types/types";
-import { Link, useNavigate } from "react-router";
+import { Link} from "react-router";
 import { FaRegEdit as Editar} from "react-icons/fa";
 import { RiDeleteBinLine as Excluir} from "react-icons/ri";
 
