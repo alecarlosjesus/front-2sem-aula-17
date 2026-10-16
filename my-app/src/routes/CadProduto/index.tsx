@@ -2,6 +2,8 @@ import {  useState } from "react";
 import { useNavigate } from "react-router";
 import type { TipoProduto } from "../../types/types";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export default function CadProduto() {
  document.title = "Cadastrar Produtos"
 
@@ -14,16 +16,22 @@ export default function CadProduto() {
   const handleSubmit = async () => {
     try {
 
-      const response = await fetch(`http://localhost:3001/produtos/`, {
+      const response = await fetch(API_URL, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "text/plain;charset=UTF-8",
         },
-        body: JSON.stringify(produto)
+        body: JSON.stringify({action:"POST", ...produto })
       });
 
       if (!response.ok) {
         throw new Error(`Ocorreu um erro no cadastro do produto: ${response.status} - ${response.statusText}`)
+      }
+
+      const { status } = await response.json();
+
+      if (status === "error") {
+        throw new Error("Ocorreu um erro no cadastro do produto: A resposta da API não contém a propriedade 'status'");
       }
 
       //SUCESSO
@@ -35,7 +43,6 @@ export default function CadProduto() {
       console.error(error);
     }
   }
-
 
   return (
     <main>
